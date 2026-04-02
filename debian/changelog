@@ -1,4 +1,4 @@
-tabber (0.1.0-1) noble; urgency=medium
+tabber (0.1.0) noble; urgency=medium
 
   * Initial release.
   * Tabbed terminal sessions using VTE and plink.
