@@ -176,6 +176,12 @@ class TabberWindow(Adw.ApplicationWindow):
         transfer_menu.append("SFTP Transfer...", "win.sftp-transfer")
         menu.append_section(None, transfer_menu)
 
+        appearance_menu = Gio.Menu()
+        appearance_menu.append("Dark Mode", "win.dark-mode")
+        appearance_menu.append("Light Mode", "win.light-mode")
+        appearance_menu.append("Follow System", "win.system-mode")
+        menu.append_section("Appearance", appearance_menu)
+
         other_menu = Gio.Menu()
         other_menu.append("Keyboard Shortcuts", "win.show-help-overlay")
         other_menu.append("About Tabber", "app.about")
@@ -244,6 +250,9 @@ class TabberWindow(Adw.ApplicationWindow):
             ("stop-logging", self._on_stop_logging),
             ("sftp-transfer", self._on_sftp_transfer),
             ("search-terminal", self._on_search_terminal),
+            ("dark-mode", self._on_dark_mode),
+            ("light-mode", self._on_light_mode),
+            ("system-mode", self._on_system_mode),
         ]
         for name, callback in simple_actions:
             action = Gio.SimpleAction.new(name, None)
@@ -677,6 +686,18 @@ class TabberWindow(Adw.ApplicationWindow):
             self.show_toast("SFTP is only available for SSH sessions")
         else:
             self.show_toast("No active session")
+
+    def _on_dark_mode(self, *_args):
+        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
+        self.show_toast("Dark mode enabled")
+
+    def _on_light_mode(self, *_args):
+        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_LIGHT)
+        self.show_toast("Light mode enabled")
+
+    def _on_system_mode(self, *_args):
+        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.PREFER_DARK)
+        self.show_toast("Following system theme")
 
     def _on_search_terminal(self, *_args):
         self.search_terminal()

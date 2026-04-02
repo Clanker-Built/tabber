@@ -21,6 +21,8 @@ class TabberApplication(Adw.Application):
         )
         self._setup_icon_theme()
         self._setup_actions()
+        # Default to dark mode - terminal apps look best dark
+        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.PREFER_DARK)
 
     def _setup_icon_theme(self):
         """Add the local data/icons directory to the icon search path
