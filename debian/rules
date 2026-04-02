@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=tabber
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+override_dh_auto_install:
+	dh_auto_install
+	# Install desktop file
+	install -Dm644 data/com.github.clankerbuilt.Tabber.desktop \
+		debian/tabber/usr/share/applications/com.github.clankerbuilt.Tabber.desktop
+	# Install icons
+	for size in 16 24 32 48 64 128 256; do \
+		install -Dm644 data/icons/hicolor/$${size}x$${size}/apps/com.github.clankerbuilt.Tabber.png \
+			debian/tabber/usr/share/icons/hicolor/$${size}x$${size}/apps/com.github.clankerbuilt.Tabber.png; \
+	done
+	install -Dm644 data/icons/hicolor/scalable/apps/com.github.clankerbuilt.Tabber.svg \
+		debian/tabber/usr/share/icons/hicolor/scalable/apps/com.github.clankerbuilt.Tabber.svg
+	# Install pixmap for legacy desktop environments
+	install -Dm644 data/pixmaps/tabber.png \
+		debian/tabber/usr/share/pixmaps/tabber.png
+	# Install launcher script
+	install -Dm755 bin/tabber debian/tabber/usr/bin/tabber
+
+override_dh_auto_test:
+	# Skip tests during build

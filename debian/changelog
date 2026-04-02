@@ -1,0 +1,18 @@
+tabber (0.1.0-1) noble; urgency=medium
+
+  * Initial release.
+  * Tabbed terminal sessions using VTE and plink.
+  * Sidebar with saved connections and session groups.
+  * Quick connect bar for ad-hoc connections.
+  * Split panes (horizontal and vertical).
+  * Broadcast input mode.
+  * Color-coded tabs and connection groups.
+  * Auto-reconnect on disconnection.
+  * Session logging.
+  * Terminal search.
+  * SFTP file transfer dialog.
+  * Command snippets library.
+  * PuTTY session format compatibility.
+  * Full keyboard shortcut support.
+
+ -- George Cottrell <georgecottrell@email.com>  Wed, 02 Apr 2026 12:00:00 -0500

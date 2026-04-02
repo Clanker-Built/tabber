@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Tabber
+GenericName=SSH Session Manager
+Comment=PuTTY session manager with tabbed terminals
+Exec=tabber
+Icon=com.github.clankerbuilt.Tabber
+Terminal=false
+Type=Application
+Categories=Network;RemoteAccess;System;TerminalEmulator;
+Keywords=ssh;putty;terminal;telnet;serial;sftp;session;tab;
+StartupNotify=true
+StartupWMClass=tabber
