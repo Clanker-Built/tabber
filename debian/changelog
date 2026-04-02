@@ -1,3 +1,10 @@
+tabber (0.1.2) noble; urgency=medium
+
+  * Add dark mode with appearance menu (Dark, Light, Follow System).
+  * Default to dark theme on startup.
+
+ -- George Cottrell <georgecottrell@email.com>  Wed, 02 Apr 2026 16:00:00 -0500
+
 tabber (0.1.1) noble; urgency=medium
 
   * Fix build: add pybuild-plugin-pyproject to Build-Depends.
