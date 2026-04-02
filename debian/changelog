@@ -1,3 +1,14 @@
+tabber (0.1.3) noble; urgency=medium
+
+  * Fix: clicking sessions inside group folders now connects correctly.
+  * Add connect button (play icon) on each session row.
+  * Add right-click context menu on sessions: Connect, Edit, Delete.
+  * Add right-click context menu on group folders: Connect All, Add Connection.
+  * Connect All opens tabs for every session in the group at once.
+  * Add Connection pre-fills the group name in the new connection dialog.
+
+ -- George Cottrell <georgecottrell@email.com>  Wed, 02 Apr 2026 17:00:00 -0500
+
 tabber (0.1.2) noble; urgency=medium
 
   * Add dark mode with appearance menu (Dark, Light, Follow System).

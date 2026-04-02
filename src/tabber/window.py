@@ -381,6 +381,11 @@ class TabberWindow(Adw.ApplicationWindow):
             expander.set_subtitle(f"{len(groups[group_name])} connection(s)")
             expander.set_icon_name("folder-symbolic")
             expander.set_expanded(True)
+            expander._group_name = group_name
+            expander._group_sessions = groups[group_name]
+
+            # Right-click menu on group folder
+            self._attach_group_context_menu(expander, group_name, groups[group_name])
 
             for session in groups[group_name]:
                 row = self._make_session_row(session)
@@ -416,6 +421,9 @@ class TabberWindow(Adw.ApplicationWindow):
         row.set_activatable(True)
         row._session = session
 
+        # Direct activation — works for both top-level and nested rows
+        row.connect("activated", self._on_row_activated)
+
         # Color dot
         if session.color and session.color in TAB_COLORS:
             dot = Gtk.DrawingArea()
@@ -426,6 +434,13 @@ class TabberWindow(Adw.ApplicationWindow):
             row.add_prefix(dot)
         else:
             row.set_icon_name(session.protocol_icon)
+
+        # Connect button
+        connect_btn = Gtk.Button(icon_name="media-playback-start-symbolic", valign=Gtk.Align.CENTER,
+                                 tooltip_text="Connect")
+        connect_btn.add_css_class("flat")
+        connect_btn.connect("clicked", self._on_connect_session, session)
+        row.add_suffix(connect_btn)
 
         # Edit button
         edit_btn = Gtk.Button(icon_name="document-edit-symbolic", valign=Gtk.Align.CENTER,
@@ -441,7 +456,97 @@ class TabberWindow(Adw.ApplicationWindow):
         del_btn.connect("clicked", self._on_delete_session, session)
         row.add_suffix(del_btn)
 
+        # Right-click context menu on session row
+        self._attach_session_context_menu(row, session)
+
         return row
+
+    def _attach_session_context_menu(self, row, session):
+        """Attach a right-click context menu to a session row."""
+        menu = Gio.Menu()
+        menu.append("Connect", f"session.connect::{session.name}")
+        menu.append("Edit", f"session.edit::{session.name}")
+        menu.append("Delete", f"session.delete::{session.name}")
+
+        popover = Gtk.PopoverMenu(menu_model=menu)
+        popover.set_parent(row)
+        popover.set_has_arrow(False)
+
+        # Right-click gesture
+        gesture = Gtk.GestureClick(button=3)
+        gesture.connect("pressed", self._on_session_right_click, popover)
+        row.add_controller(gesture)
+
+        # Store session ref on popover for action lookup
+        popover._session = session
+
+    def _attach_group_context_menu(self, expander, group_name, group_sessions):
+        """Attach a right-click context menu to a group folder row."""
+        menu = Gio.Menu()
+        menu.append("Connect All in Group", f"group.connect-all::{group_name}")
+        menu.append("Add Connection to Group", f"group.add-connection::{group_name}")
+
+        popover = Gtk.PopoverMenu(menu_model=menu)
+        popover.set_parent(expander)
+        popover.set_has_arrow(False)
+
+        gesture = Gtk.GestureClick(button=3)
+        gesture.connect("pressed", self._on_group_right_click, popover, group_name, group_sessions)
+        expander.add_controller(gesture)
+
+    def _on_session_right_click(self, gesture, _n_press, x, y, popover):
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = int(x), int(y), 1, 1
+        popover.set_pointing_to(rect)
+
+        # Register temporary actions for this popover
+        session = popover._session
+        group = Gio.SimpleActionGroup()
+
+        connect_action = Gio.SimpleAction.new("connect", None)
+        connect_action.connect("activate", lambda *_: self.open_session_tab(session))
+        group.add_action(connect_action)
+
+        edit_action = Gio.SimpleAction.new("edit", None)
+        edit_action.connect("activate", lambda *_: self.show_connection_dialog(session=session))
+        group.add_action(edit_action)
+
+        delete_action = Gio.SimpleAction.new("delete", None)
+        delete_action.connect("activate", lambda *_: self._on_delete_session(None, session))
+        group.add_action(delete_action)
+
+        popover.insert_action_group("session", group)
+        popover.popup()
+
+    def _on_group_right_click(self, gesture, _n_press, x, y, popover, group_name, group_sessions):
+        rect = Gdk.Rectangle()
+        rect.x, rect.y, rect.width, rect.height = int(x), int(y), 1, 1
+        popover.set_pointing_to(rect)
+
+        group = Gio.SimpleActionGroup()
+
+        connect_all_action = Gio.SimpleAction.new("connect-all", None)
+        connect_all_action.connect("activate", lambda *_: self._connect_group(group_sessions))
+        group.add_action(connect_all_action)
+
+        add_action = Gio.SimpleAction.new("add-connection", None)
+        add_action.connect("activate", lambda *_: self._add_to_group(group_name))
+        group.add_action(add_action)
+
+        popover.insert_action_group("group", group)
+        popover.popup()
+
+    def _connect_group(self, sessions):
+        """Open tabs for all sessions in a group."""
+        for session in sessions:
+            self.open_session_tab(session)
+        self.show_toast(f"Opened {len(sessions)} session(s)")
+
+    def _add_to_group(self, group_name):
+        """Open connection dialog pre-filled with this group name."""
+        from tabber.session import Session
+        prefilled = Session(group=group_name)
+        self.show_connection_dialog(session=prefilled)
 
     @staticmethod
     def _draw_color_dot(area, cr, width, height, color_hex):
@@ -572,8 +677,17 @@ class TabberWindow(Adw.ApplicationWindow):
         self.show_connection_dialog()
 
     def _on_session_activated(self, _listbox, row):
+        # Fallback for top-level ungrouped rows activated via ListBox signal
         if hasattr(row, "_session"):
             self.open_session_tab(row._session)
+
+    def _on_row_activated(self, row):
+        """Direct activation on ActionRow — works for nested rows inside ExpanderRow."""
+        if hasattr(row, "_session"):
+            self.open_session_tab(row._session)
+
+    def _on_connect_session(self, _btn, session):
+        self.open_session_tab(session)
 
     def _on_session_saved(self, _dialog, session):
         self.refresh_sidebar()
