@@ -26,6 +26,7 @@ class TerminalWidget(Gtk.Box):
         self._tab_parent = tab_parent
         self._child_pid = -1
         self._connected = False
+        self._closing = False
         self._log_file = None
         self._reconnect_timer_id = None
         self._reconnect_attempts = 0
@@ -215,6 +216,8 @@ class TerminalWidget(Gtk.Box):
     def _on_child_exited(self, _terminal, _status):
         self._connected = False
         self._child_pid = -1
+        if self._closing:
+            return
         if self._tab_parent:
             self._tab_parent._on_terminal_disconnected(self)
 
@@ -282,6 +285,7 @@ class TerminalWidget(Gtk.Box):
 
     def cleanup(self):
         """Clean up resources on tab close."""
+        self._closing = True
         self._cancel_reconnect()
         self.stop_logging()
         self.disconnect()

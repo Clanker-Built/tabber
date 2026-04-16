@@ -1,6 +1,6 @@
 """Tabber - PuTTY session manager with tabbed terminals."""
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __author__ = "George Cottrell"
 __email__ = "georgecottrell@email.com"
 APP_ID = "com.github.clankerbuilt.Tabber"

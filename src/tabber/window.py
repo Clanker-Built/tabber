@@ -653,12 +653,12 @@ class TabberWindow(Adw.ApplicationWindow):
             dialog.set_response_appearance("close", Adw.ResponseAppearance.DESTRUCTIVE)
             dialog.connect("response", self._on_close_confirmed, tab_view, page)
             dialog.present(self)
-            return Adw.TabView.confirm_close_page(tab_view, page, False)
+            return Gdk.EVENT_STOP
 
         if isinstance(tab, TerminalTab):
             tab.cleanup()
         tab_view.close_page_finish(page, True)
-        return Adw.TabView.confirm_close_page(tab_view, page, True)
+        return Gdk.EVENT_STOP
 
     def _on_close_confirmed(self, dialog, response, tab_view, page):
         if response == "close":

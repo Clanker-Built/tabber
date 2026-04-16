@@ -1,3 +1,13 @@
+tabber (0.1.4) noble; urgency=medium
+
+  * Fix: closing tabs is now instant. The close-page handler called a
+    nonexistent Adw.TabView API, raising AttributeError on every close
+    and triggering GTK's default close path on top of our own.
+  * Fix: cancel auto-reconnect timer on tab close so a destroyed
+    terminal can't try to reconnect 3 seconds later.
+
+ -- George Cottrell <georgecottrell@email.com>  Thu, 16 Apr 2026 12:00:00 -0500
+
 tabber (0.1.3) noble; urgency=medium
 
   * Fix: clicking sessions inside group folders now connects correctly.
