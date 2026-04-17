@@ -207,6 +207,14 @@ class TabberWindow(Adw.ApplicationWindow):
         self._tab_view.connect("close-page", self._on_close_page)
         self._tab_view.connect("notify::selected-page", self._on_tab_selected)
         self._tab_view.connect("notify::n-pages", self._on_tab_count_changed)
+        self._tab_view.connect("setup-menu", self._on_setup_tab_menu)
+        self._tab_view.connect("create-window", self._on_create_window)
+        self._menu_page = None
+
+        tab_context_menu = Gio.Menu()
+        tab_context_menu.append("Move to New Window", "win.detach-tab")
+        tab_context_menu.append("Close", "win.close-menu-tab")
+        self._tab_view.set_menu_model(tab_context_menu)
 
         # Connect tab overview to tab view
         self._tab_overview.set_view(self._tab_view)
@@ -253,6 +261,8 @@ class TabberWindow(Adw.ApplicationWindow):
             ("dark-mode", self._on_dark_mode),
             ("light-mode", self._on_light_mode),
             ("system-mode", self._on_system_mode),
+            ("detach-tab", self._on_detach_tab),
+            ("close-menu-tab", self._on_close_menu_tab),
         ]
         for name, callback in simple_actions:
             action = Gio.SimpleAction.new(name, None)
@@ -310,6 +320,17 @@ class TabberWindow(Adw.ApplicationWindow):
         page = self._tab_view.get_selected_page()
         if page:
             self._tab_view.close_page(page)
+
+    def detach_current_tab(self):
+        page = self._tab_view.get_selected_page()
+        if page:
+            self._detach_page(page)
+
+    def _detach_page(self, page):
+        new_win = self.get_application().new_window()
+        self._tab_view.transfer_page(page, new_win._tab_view, 0)
+        new_win._content_stack.set_visible_child_name("tabs")
+        new_win.present()
 
     def toggle_sidebar(self):
         self._split_view.set_show_sidebar(not self._split_view.get_show_sidebar())
@@ -668,6 +689,26 @@ class TabberWindow(Adw.ApplicationWindow):
             tab_view.close_page_finish(page, True)
         else:
             tab_view.close_page_finish(page, False)
+
+    def _on_setup_tab_menu(self, _tab_view, page):
+        self._menu_page = page
+
+    def _on_detach_tab(self, *_args):
+        page = self._menu_page or self._tab_view.get_selected_page()
+        if not page or self._tab_view.get_n_pages() <= 1:
+            return
+        self._detach_page(page)
+
+    def _on_close_menu_tab(self, *_args):
+        page = self._menu_page or self._tab_view.get_selected_page()
+        if page:
+            self._tab_view.close_page(page)
+
+    def _on_create_window(self, _tab_view):
+        new_win = self.get_application().new_window()
+        new_win._content_stack.set_visible_child_name("tabs")
+        new_win.present()
+        return new_win._tab_view
 
     def _on_overview_create_tab(self, overview):
         self.show_connection_dialog()

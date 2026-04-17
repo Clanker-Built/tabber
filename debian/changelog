@@ -1,3 +1,22 @@
+tabber (0.1.5) noble; urgency=medium
+
+  * Add: detach a tab to a new window. Three ways to trigger:
+    right-click tab > Move to New Window, drag a tab onto the desktop,
+    or Ctrl+Shift+D on the active tab.
+  * Add: tabbed connection dialog with full PuTTY/plink coverage.
+    - Quick Connect: name, protocol, host, port, user, SSH key.
+    - SSH: compression, X11 forwarding, no-PTY, no-shell, Pageant
+      agent, agent forwarding, certificate file.
+    - Tunnels: editable list of Local / Remote / Dynamic (SOCKS)
+      port forwards.
+    - Proxy: jump host (-J), proxy command, IPv4/IPv6 only,
+      logical host name (-loghost).
+    - Terminal: group, tab color, notes (existing organization fields).
+  * Sessions persist all advanced options in Tabber's JSON metadata;
+    basic fields remain compatible with PuTTY's session format.
+
+ -- George Cottrell <georgecottrell@email.com>  Thu, 16 Apr 2026 21:00:00 -0500
+
 tabber (0.1.4) noble; urgency=medium
 
   * Fix: closing tabs is now instant. The close-page handler called a

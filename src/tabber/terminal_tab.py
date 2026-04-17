@@ -196,8 +196,45 @@ class TerminalWidget(Gtk.Box):
             argv.extend(["-P", str(s.port)])
         if s.username:
             argv.extend(["-l", s.username])
-        if s.identity_file and s.protocol == "ssh":
-            argv.extend(["-i", s.identity_file])
+
+        # SSH-specific options
+        if s.protocol == "ssh":
+            if s.identity_file:
+                argv.extend(["-i", s.identity_file])
+            if s.cert_file:
+                argv.extend(["-cert", s.cert_file])
+            if s.compression:
+                argv.append("-C")
+            argv.append("-agent" if s.use_agent else "-noagent")
+            if s.agent_forward:
+                argv.append("-A")
+            if s.x11_forward:
+                argv.append("-X")
+            if s.no_pty:
+                argv.append("-T")
+            if s.no_shell:
+                argv.append("-N")
+            if s.jump_host:
+                argv.extend(["-J", s.jump_host])
+            for t in s.tunnels:
+                ttype = t.get("type", "L")
+                listen = t.get("listen", "")
+                target = t.get("target", "")
+                if not listen:
+                    continue
+                spec = listen if ttype == "D" else f"{listen}:{target}"
+                argv.extend([f"-{ttype}", spec])
+
+        # Network options (apply to all TCP protocols)
+        if s.ip_version == "4":
+            argv.append("-4")
+        elif s.ip_version == "6":
+            argv.append("-6")
+        if s.logical_host:
+            argv.extend(["-loghost", s.logical_host])
+        if s.proxy_command:
+            argv.extend(["-proxycmd", s.proxy_command])
+
         argv.append(s.hostname)
         return argv
 

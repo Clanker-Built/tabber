@@ -39,6 +39,19 @@ class SessionManager:
                         session.color = meta.get("color", "")
                         session.notes = meta.get("notes", "")
                         session.last_connected = meta.get("last_connected", "")
+                        # Advanced SSH options (Tabber-only)
+                        session.compression = meta.get("compression", False)
+                        session.use_agent = meta.get("use_agent", True)
+                        session.agent_forward = meta.get("agent_forward", False)
+                        session.cert_file = meta.get("cert_file", "")
+                        session.no_shell = meta.get("no_shell", False)
+                        session.no_pty = meta.get("no_pty", False)
+                        session.x11_forward = meta.get("x11_forward", False)
+                        session.tunnels = meta.get("tunnels", [])
+                        session.jump_host = meta.get("jump_host", "")
+                        session.proxy_command = meta.get("proxy_command", "")
+                        session.ip_version = meta.get("ip_version", "")
+                        session.logical_host = meta.get("logical_host", "")
                         sessions.append(session)
 
         return sessions
@@ -116,6 +129,18 @@ class SessionManager:
             "color": session.color,
             "notes": session.notes,
             "last_connected": session.last_connected,
+            "compression": session.compression,
+            "use_agent": session.use_agent,
+            "agent_forward": session.agent_forward,
+            "cert_file": session.cert_file,
+            "no_shell": session.no_shell,
+            "no_pty": session.no_pty,
+            "x11_forward": session.x11_forward,
+            "tunnels": session.tunnels,
+            "jump_host": session.jump_host,
+            "proxy_command": session.proxy_command,
+            "ip_version": session.ip_version,
+            "logical_host": session.logical_host,
         }
         # Track group ordering
         if session.group and session.group not in metadata.get("groups_order", []):

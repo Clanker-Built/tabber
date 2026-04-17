@@ -21,3 +21,4 @@ debian/debhelper-build-stamp
 .pybuild/
 .venv/
 venv/
+screenshots/

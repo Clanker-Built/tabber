@@ -34,6 +34,21 @@ class Session:
     protocol: str = "ssh"
     username: str = ""
     identity_file: str = ""
+    # SSH options
+    compression: bool = False
+    use_agent: bool = True
+    agent_forward: bool = False
+    cert_file: str = ""
+    no_shell: bool = False
+    no_pty: bool = False
+    x11_forward: bool = False
+    # Tunnels: list of dicts like {"type": "L"|"R"|"D", "listen": "8080", "target": "host:80"}
+    tunnels: list = field(default_factory=list)
+    # Proxy / network
+    jump_host: str = ""
+    proxy_command: str = ""
+    ip_version: str = ""  # "", "4", "6"
+    logical_host: str = ""
     # Tabber metadata (stored in sessions.json, not PuTTY files)
     group: str = ""
     color: str = ""
@@ -63,8 +78,10 @@ class Session:
         return "".join(parts)
 
     def copy(self):
-        """Return a shallow copy."""
-        return Session(**self.__dict__)
+        """Return a deep-ish copy (tunnels list is duplicated)."""
+        data = dict(self.__dict__)
+        data["tunnels"] = [dict(t) for t in self.tunnels]
+        return Session(**data)
 
 
 def _url_encode_name(name):

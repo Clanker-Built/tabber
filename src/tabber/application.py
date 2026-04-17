@@ -40,10 +40,14 @@ class TabberApplication(Adw.Application):
     def do_activate(self):
         win = self.props.active_window
         if not win:
-            from tabber.window import TabberWindow
-            win = TabberWindow(application=self)
-            win.set_help_overlay(self._build_shortcuts_window())
+            win = self.new_window()
         win.present()
+
+    def new_window(self):
+        from tabber.window import TabberWindow
+        win = TabberWindow(application=self)
+        win.set_help_overlay(self._build_shortcuts_window())
+        return win
 
     def _build_shortcuts_window(self):
         shortcuts = Gtk.ShortcutsWindow()
@@ -55,6 +59,7 @@ class TabberApplication(Adw.Application):
                 ("New Connection", "<Control>t"),
                 ("Quick Connect", "<Control>l"),
                 ("Close Tab", "<Control>w"),
+                ("Move Tab to New Window", "<Control><Shift>d"),
                 ("Tab Overview", "<Control><Shift>o"),
             ]),
             ("Navigation", [
@@ -119,6 +124,7 @@ class TabberApplication(Adw.Application):
             ("search-terminal", self._on_search_terminal, ["<Control><Shift>f"]),
             ("toggle-logging", self._on_toggle_logging, ["<Control><Shift>l"]),
             ("sftp-transfer", self._on_sftp_transfer, ["<Control><Shift>t"]),
+            ("detach-current-tab", self._on_detach_current_tab, ["<Control><Shift>d"]),
         ]
         for name, callback, accels in actions:
             action = Gio.SimpleAction.new(name, None)
@@ -248,3 +254,8 @@ class TabberApplication(Adw.Application):
         win = self._get_window()
         if win:
             win._on_sftp_transfer()
+
+    def _on_detach_current_tab(self, *_args):
+        win = self._get_window()
+        if win:
+            win.detach_current_tab()
