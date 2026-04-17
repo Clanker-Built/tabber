@@ -2,6 +2,12 @@
 
 All notable changes to Tabber will be documented in this file.
 
+## [0.1.7] - 2026-04-17
+
+### Changed
+- New application icon: stylized "T" terminal glyph on a dark rounded
+  tile, with a teal prompt chevron inside
+
 ## [0.1.6] - 2026-04-17
 
 ### Added

@@ -1,3 +1,10 @@
+tabber (0.1.7) noble; urgency=medium
+
+  * New application icon: stylized T terminal glyph on a dark rounded
+    tile with a teal prompt chevron inside.
+
+ -- George Cottrell <georgecottrell@email.com>  Fri, 17 Apr 2026 12:10:00 -0500
+
 tabber (0.1.6) noble; urgency=medium
 
   * Add: dual-pane SFTP file browser. Opens from a new Files button on
