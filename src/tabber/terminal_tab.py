@@ -346,6 +346,20 @@ class TerminalTab(Gtk.Box):
         self._banner.connect("button-clicked", self._on_reconnect)
         self.append(self._banner)
 
+        # Per-tab action bar (Files button for SSH sessions)
+        if session.protocol == "ssh":
+            action_bar = Gtk.ActionBar()
+            files_btn = Gtk.Button(
+                icon_name="folder-open-symbolic",
+                label="Files",
+                tooltip_text="Open file transfer (Ctrl+Shift+T)",
+            )
+            files_btn.set_has_frame(False)
+            files_btn.connect("clicked", self._on_files_clicked)
+            # Pack at end so it sits at the right edge.
+            action_bar.pack_end(files_btn)
+            self.append(action_bar)
+
         # Primary terminal
         self._container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self._container.set_vexpand(True)
@@ -419,6 +433,12 @@ class TerminalTab(Gtk.Box):
     def toggle_search(self):
         """Toggle search on the focused (or primary) terminal."""
         self._primary.toggle_search()
+
+    def _on_files_clicked(self, _btn):
+        """Ask the parent window to open file transfer for this tab."""
+        win = self.get_root()
+        if win and hasattr(win, "open_file_transfer"):
+            win.open_file_transfer(self.session)
 
     def cleanup(self):
         for t in self._terminals:

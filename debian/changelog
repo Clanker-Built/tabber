@@ -1,3 +1,29 @@
+tabber (0.1.6) noble; urgency=medium
+
+  * Add: dual-pane SFTP file browser. Opens from a new Files button on
+    each SSH tab, the hamburger menu's File Transfer... item, or
+    Ctrl+Shift+T. Replaces the old single-file transfer dialog.
+  * Local filesystem on the left, remote filesystem on the right. Each
+    pane has a path bar, Up/Home/Refresh buttons, column headers
+    (Name / Size / Modified), and a hidden-file toggle.
+  * Click semantics: single click selects, double click navigates into
+    a folder, triple click uploads or downloads the selected file or
+    folder (recursive for folders via psftp put -r / get -r).
+  * Right-click context menus: Upload/Refresh on the local pane;
+    Download, Rename, Delete, New Folder, Refresh on the remote pane.
+  * Bottom status bar with a pulsing progress bar during transfers and
+    deletes, and explicit success / failure summary on completion.
+  * Recursive folder delete on the remote side (psftp's rmdir only
+    removes empty dirs, so the backend walks the tree).
+  * Password auth for sessions without an SSH key: in-memory password
+    prompt on open; passed to psftp via -pw for the window lifetime
+    only, never persisted.
+  * New PsftpBackend wraps a persistent psftp -batch subprocess with a
+    nonce-framed request/response protocol so command output can be
+    reliably demultiplexed. LC_ALL=C forced so ls -l dates are stable.
+
+ -- George Cottrell <georgecottrell@email.com>  Fri, 17 Apr 2026 11:30:00 -0500
+
 tabber (0.1.5) noble; urgency=medium
 
   * Add: detach a tab to a new window. Three ways to trigger:

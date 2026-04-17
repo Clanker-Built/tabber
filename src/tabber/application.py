@@ -83,7 +83,7 @@ class TabberApplication(Adw.Application):
             ("Features", [
                 ("Toggle Broadcast", "<Control><Shift>b"),
                 ("Start/Stop Logging", "<Control><Shift>l"),
-                ("SFTP Transfer", "<Control><Shift>t"),
+                ("File Transfer", "<Control><Shift>t"),
             ]),
             ("Application", [
                 ("Quit", "<Control>q"),
@@ -123,7 +123,7 @@ class TabberApplication(Adw.Application):
             ("toggle-broadcast", self._on_toggle_broadcast, ["<Control><Shift>b"]),
             ("search-terminal", self._on_search_terminal, ["<Control><Shift>f"]),
             ("toggle-logging", self._on_toggle_logging, ["<Control><Shift>l"]),
-            ("sftp-transfer", self._on_sftp_transfer, ["<Control><Shift>t"]),
+            ("file-transfer", self._on_file_transfer, ["<Control><Shift>t"]),
             ("detach-current-tab", self._on_detach_current_tab, ["<Control><Shift>d"]),
         ]
         for name, callback, accels in actions:
@@ -148,9 +148,9 @@ class TabberApplication(Adw.Application):
             license_type=Gtk.License.GPL_3_0,
             comments="A modern PuTTY session manager with tabbed terminals "
                      "for Ubuntu. Features tabbed sessions, split panes, "
-                     "broadcast input, session groups, SFTP transfers, "
-                     "command snippets, terminal search, session logging, "
-                     "and auto-reconnect.",
+                     "broadcast input, session groups, dual-pane SFTP "
+                     "file browser, command snippets, terminal search, "
+                     "session logging, and auto-reconnect.",
             website="https://github.com/Clanker-Built/tabber",
             issue_url="https://github.com/Clanker-Built/tabber/issues",
             developers=["George Cottrell <georgecottrell@email.com>"],
@@ -250,10 +250,10 @@ class TabberApplication(Adw.Application):
                     if paths:
                         win.show_toast(f"Logging to {paths[0]}")
 
-    def _on_sftp_transfer(self, *_args):
+    def _on_file_transfer(self, *_args):
         win = self._get_window()
         if win:
-            win._on_sftp_transfer()
+            win._on_file_transfer()
 
     def _on_detach_current_tab(self, *_args):
         win = self._get_window()

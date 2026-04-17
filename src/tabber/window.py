@@ -173,7 +173,7 @@ class TabberWindow(Adw.ApplicationWindow):
         menu.append_section("Logging", log_menu)
 
         transfer_menu = Gio.Menu()
-        transfer_menu.append("SFTP Transfer...", "win.sftp-transfer")
+        transfer_menu.append("File Transfer...", "win.file-transfer")
         menu.append_section(None, transfer_menu)
 
         appearance_menu = Gio.Menu()
@@ -256,7 +256,7 @@ class TabberWindow(Adw.ApplicationWindow):
             ("unsplit", self._on_unsplit),
             ("start-logging", self._on_start_logging),
             ("stop-logging", self._on_stop_logging),
-            ("sftp-transfer", self._on_sftp_transfer),
+            ("file-transfer", self._on_file_transfer),
             ("search-terminal", self._on_search_terminal),
             ("dark-mode", self._on_dark_mode),
             ("light-mode", self._on_light_mode),
@@ -831,16 +831,20 @@ class TabberWindow(Adw.ApplicationWindow):
             tab.stop_logging()
             self.show_toast("Logging stopped")
 
-    def _on_sftp_transfer(self, *_args):
+    def _on_file_transfer(self, *_args):
         tab = self._get_current_tab()
         if tab and tab.session.protocol == "ssh":
-            from tabber.sftp import SftpTransferDialog
-            dialog = SftpTransferDialog(tab.session, self)
-            dialog.present(self)
+            self.open_file_transfer(tab.session)
         elif tab:
-            self.show_toast("SFTP is only available for SSH sessions")
+            self.show_toast("File transfer is only available for SSH sessions")
         else:
             self.show_toast("No active session")
+
+    def open_file_transfer(self, session):
+        """Open a dual-pane file transfer window for the given SSH session."""
+        from tabber.file_transfer import FileTransferWindow
+        win = FileTransferWindow(session=session, application=self.get_application())
+        win.present()
 
     def _on_dark_mode(self, *_args):
         Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)

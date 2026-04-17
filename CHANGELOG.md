@@ -2,6 +2,43 @@
 
 All notable changes to Tabber will be documented in this file.
 
+## [0.1.6] - 2026-04-17
+
+### Added
+- Dual-pane SFTP file browser replacing the single-file transfer dialog.
+  Open it from the **Files** button on any SSH tab, the hamburger menu's
+  "File Transfer…" item, or `Ctrl+Shift+T`
+- Local filesystem pane (left) and remote filesystem pane (right), each
+  with path bar, Up / Home / Refresh, column headers (Name / Size /
+  Modified), and hidden-file toggle
+- Click semantics chosen to match the user's muscle memory:
+  - **Single click** – select (multi-select supported)
+  - **Double click** – navigate into a folder (files: no-op)
+  - **Triple click** – upload or download the selected file *or* folder
+    (recursive for folders via psftp `put -r` / `get -r`)
+- Right-click context menus per pane: Upload/Refresh (local);
+  Download, Rename, Delete, New Folder, Refresh (remote)
+- Persistent status bar at the bottom of the window with a pulsing
+  progress bar during transfers and deletes, and explicit
+  success (green check) or failure (red error) summary on completion
+- Recursive folder delete on the remote side: the backend walks the
+  tree, `rm`s every file, then `rmdir`s each directory bottom-up
+- Password-auth support for sessions without an SSH key: in-memory
+  password prompt on window open (never persisted); passed to psftp
+  via `-pw` only for the lifetime of that window
+
+### Technical notes
+- New `PsftpBackend` class wraps a persistent `psftp -batch` subprocess
+  with a nonce-framed request/response protocol so command output can
+  be reliably demultiplexed. Every command is wrapped with
+  `!echo __BEGIN_<nonce>__` / `!echo __END_<nonce>__`; the reader
+  thread uses those markers to carve the stream into frames, which
+  sidesteps psftp's ambiguous `psftp> ` prompt placement
+- `LC_ALL=C` forced in psftp's environment so `ls -l` dates are stable
+  regardless of host locale
+- Commands are serialized through a writer thread so at most one frame
+  is in flight at a time
+
 ## [0.1.5] - 2026-04-16
 
 ### Added
