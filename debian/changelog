@@ -1,3 +1,11 @@
+tabber (0.1.8) noble; urgency=medium
+
+  * Icon refined: the rounded dark tile is now part of the icon artwork
+    with a true alpha channel, so it composites cleanly against any
+    wallpaper, dock, or panel color.
+
+ -- George Cottrell <georgecottrell@email.com>  Fri, 17 Apr 2026 12:40:00 -0500
+
 tabber (0.1.7) noble; urgency=medium
 
   * New application icon: stylized T terminal glyph on a dark rounded

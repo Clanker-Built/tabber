@@ -2,6 +2,13 @@
 
 All notable changes to Tabber will be documented in this file.
 
+## [0.1.8] - 2026-04-17
+
+### Changed
+- Icon refined: the rounded dark tile is now part of the icon artwork
+  with a true alpha channel, so it composites cleanly against any
+  wallpaper, dock, or panel color
+
 ## [0.1.7] - 2026-04-17
 
 ### Changed
